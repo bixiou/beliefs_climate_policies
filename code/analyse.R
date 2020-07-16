@@ -4520,16 +4520,16 @@ summary(lm(simule_gain ~ Gilets_jaunes, data = s))
 # Increase in acceptance rate if 100% were compliers and coef didn't change: 0.38
 0.703 * 0.534
 
-# (1) Acceptance rate in [p10-p60] if everyone was correct in Tax & Targeted Dividend: 0.47
+# (1) Acceptance rate in [p10-p60] if everyone was correct in Tax & Targeted Dividend: 0.47 (0.53 avec simule_gain plutôt que simule_gain_cible)
 s$non_perdant[(s$percentile_revenu <= 60 & s$percentile_revenu >= 10) | (s$percentile_revenu_conjoint <= 60 & s$percentile_revenu_conjoint >= 10)] <- tsls1_si1$fitted.values
 wtd.mean(tsls2_si1$fitted.values + 0.534 * (1*(s$simule_gain_cible > 0) - (s$non_perdant))[(s$percentile_revenu <= 60 & s$percentile_revenu >= 10) | (s$percentile_revenu_conjoint <= 60 & s$percentile_revenu_conjoint >= 10)], 
          weights = s$weight[(s$percentile_revenu <= 60 & s$percentile_revenu >= 10) | (s$percentile_revenu_conjoint <= 60 & s$percentile_revenu_conjoint >= 10)])
 
-# (2) Acceptance rate if everyone was correct in Tax & Targeted Dividend (IV): 0.45
+# (2) Acceptance rate if everyone was correct in Tax & Targeted Dividend (IV): 0.45 (0.50 avec simule_gain plutôt que simule_gain_cible)
 s$non_perdant <- tsls1_si2$fitted.values
 wtd.mean(tsls2_si2$fitted.values + 0.4756 * (1*(s$simule_gain_cible > 0) - (s$non_perdant)), weights = s$weight)
 
-# (3) Acceptance rate if everyone was correct in Tax & Targeted Dividend (OLS): 0.44
+# (3) Acceptance rate if everyone was correct in Tax & Targeted Dividend (OLS): 0.44 (0.49 avec simule_gain plutôt que simule_gain_cible)
 wtd.mean(ols_si3$fitted.values + 0.4376 * (1*(s$simule_gain_cible > 0) - as.numeric(s$gagnant_cible_categorie!='Perdant')), weights = s$weight)
 
 # (4) Acceptance rate in |simule_gain| < 50 if everyone was correct after feedback: 0.46
