@@ -243,28 +243,28 @@ summary(reg_effect_feedback_4)
 
 # Not no, close to the threshold, interaction with yellow vests
 s$gj <- s$gilets_jaunes > 0
-formula_effect_feedback_5 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') + simule_gagnant * YV_supporter + (taxe_approbation=='NSP') + ", 
+formula_effect_feedback_5 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') + simule_gagnant * gj + (taxe_approbation=='NSP') + ", 
                                               paste(variables_reg_effect_feedback, collapse = ' + ')))
 reg_effect_feedback_5 <- lm(formula_effect_feedback_5, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
 summary(reg_effect_feedback_5)
 
 # Not no, close to the threshold, interaction with yellow vests and tax acceptance
-formula_effect_feedback_6 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') * simule_gagnant + simule_gagnant * YV_supporter + simule_gagnant * tax_acceptance + (taxe_approbation=='NSP') + ", 
+formula_effect_feedback_6 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') * simule_gagnant + simule_gagnant * gj + simule_gagnant * tax_acceptance + (taxe_approbation=='NSP') + ", 
                                               paste(variables_reg_effect_feedback, collapse = ' + ')))
 reg_effect_feedback_6 <- lm(formula_effect_feedback_6, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
 summary(reg_effect_feedback_6)
 
 table_effect_feedback <- stargazer(reg_effect_feedback_1, reg_effect_feedback_3, reg_effect_feedback_6, reg_effect_feedback_2,
-                                  title="Effect feedback on belief of winning.", #star.cutoffs = c(0.1, 1e-5, 1e-30),
-                                  covariate.labels = c("Predicted winner ($\\widehat{\\Gamma}$)", "$\\widehat{\\Gamma}$ $\\times$ Yellow Vests supporter", "$\\widehat{\\Gamma}$ $\\times$ $A^0$", "Initial tax Acceptance ($A^0$)", "Yellow Vests supporter"),
-                                  dep.var.labels = c("Believes does not lose", "Believes wins"), dep.var.caption = "", header = FALSE, 
-                                  keep = c("simule_gagnant", "acceptance", "YV_supporter", "simule_gagnant:YV_supporter"), order = c("simule_gagnant", "acceptance", "YV_supporter", "simule_gagnant:YV_supporter"),
-                                  add.lines = list(c("Controls: Incomes (piecewise continuous)", " \\checkmark", " \\checkmark", " \\checkmark", "\\checkmark"),
-                                                   c("\\quad estimated gains, socio-demo, other motives ", "", "", "", ""),
-                                                   c("Controls: initial win/lose category ($G$)", "", "", " \\checkmark", ""),
-                                                   c("and interaction \\quad G \\times $\\widehat{\\Gamma}$", "", "", "", ""),
-                                                   c("Sub-sample", "$\\left| \\widehat{\\gamma}\\right|<50$", "", "$\\left| \\widehat{\\gamma}\\right|<50$", "$\\left| \\widehat{\\gamma}\\right|<50$")),
-                                  no.space=TRUE, intercept.bottom=FALSE, intercept.top=TRUE, omit.stat=c("adj.rsq", "f", "ser"), label="tab:heterogeneity_update")
+      title="Effect feedback on belief of winning.", star.cutoffs = NA, omit.table.layout = 'n', #star.cutoffs = c(0.1, 1e-5, 1e-30),
+      covariate.labels = c("Predicted winner ($\\widehat{\\Gamma}$)", "Initial tax Acceptance ($A^0$)", "Yellow Vests supporter", "$\\widehat{\\Gamma}$ $\\times$ Yellow Vests supporter", "$\\widehat{\\Gamma}$ $\\times$ $A^0$"),
+      dep.var.labels = c("Believes does not lose", "Believes wins"), dep.var.caption = "", header = FALSE, 
+      keep = c("^simule_gagnant", "acceptance", "gj"), order = c("^simule_gagnant1$", "^tax_acceptance", "$gj"),
+      add.lines = list(c("Controls: Incomes (piecewise continuous)", " \\checkmark", " \\checkmark", " \\checkmark", "\\checkmark"),
+               c("\\quad estimated gains, socio-demo, other motives ", "", "", "", ""),
+               c("Controls: initial win/lose category ($G$)", "", "", " \\checkmark", ""),
+               c("\\quad and interaction ($G \\times \\widehat{\\Gamma}$", "", "", "", ""),
+               c("Sub-sample", "$\\left| \\widehat{\\gamma}\\right|<50$", "", "$\\left| \\widehat{\\gamma}\\right|<50$", "$\\left| \\widehat{\\gamma}\\right|<50$")),
+      no.space=TRUE, intercept.bottom=FALSE, intercept.top=TRUE, omit.stat=c("adj.rsq", "f", "ser"), label="tab:heterogeneity_update")
 write_clip(gsub('\\end{table}', '} {\\footnotesize \\parbox[t]{\\textwidth}{\\linespread{1.2}\\selectfont \\textsc{Note:} Standard errors are reported in parentheses. The list of controls can be found in Appendix \\ref{set_controls}.} }\\end{table}', 
                 gsub('\\begin{tabular}{@', '\\makebox[\\textwidth][c]{ \\begin{tabular}{@', table_effect_feedback, fixed=TRUE), fixed=T), collapse=' ')
 
