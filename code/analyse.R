@@ -4539,3 +4539,19 @@ wtd.mean(tsls2_si4$fitted.values + 0.4196 * (as.numeric(s$simule_gagnant) - (s$n
 # Acceptance rate if everyone believed in effectiveness: 0.45 (IV effect: +0.42)
 s$taxe_efficace.hat <- tsls1_ee1$fitted.values
 wtd.mean(tsls2_ee1$fitted.values + 0.4156 * (1 - (s$taxe_efficace.hat)), weights = s$weight)
+
+
+##### 4.1.2 Effect of feedback on beliefs #####
+# (3) Not no, close to the threshold, interaction with tax acceptance
+formula_effect_feedback_4 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ simule_gagnant * tax_acceptance + (taxe_approbation=='NSP') + ", 
+                                              paste(variables_reg_effect_feedback, collapse = ' + ')))
+reg_effect_feedback_4 <- lm(formula_effect_feedback_4, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
+summary(reg_effect_feedback_4)
+
+# (3) Not no, close to the threshold, interaction with yellow vests
+s$gj <- s$gilets_jaunes > 0
+formula_effect_feedback_5 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') + simule_gagnant * gj + (taxe_approbation=='NSP') + ", 
+                                              paste(variables_reg_effect_feedback, collapse = ' + ')))
+reg_effect_feedback_5 <- lm(formula_effect_feedback_5, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
+summary(reg_effect_feedback_5)
+

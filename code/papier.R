@@ -213,58 +213,45 @@ binconf(x = x, n = n) # 85.7%
 wtd.mean(abs(s$simule_gain) > 110, weights = s$weight) # 28%
 mean(fit$mistake[fit$gain > 110]) # 1%
 
-# 4.1.3 Effect of feedback on beliefs
+# 4.1.2 Effect of feedback on beliefs
 variables_reg_effect_feedback <- c("prog_na", "Simule_gain", "Simule_gain2", "taxe_efficace", "single",  "hausse_depenses_par_uc", variables_demo, piece.formula(c("percentile_revenu", "percentile_revenu_conjoint"), c(20,70), vector=T)) 
 variables_reg_effect_feedback <- variables_reg_effect_feedback[!(variables_reg_effect_feedback %in% c("revenu", "rev_tot", "age", "age_65_plus"))]
 
-# Not no, close to the threshold
+# (1) Not no, close to the threshold
 formula_effect_feedback_1 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ simule_gagnant + tax_acceptance + (taxe_approbation=='NSP') + ", 
                                       paste(variables_reg_effect_feedback, collapse = ' + ')))
 reg_effect_feedback_1 <- lm(formula_effect_feedback_1, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
 summary(reg_effect_feedback_1)
 
-# Yes, close to the threshold
-formula_effect_feedback_2 <- as.formula(paste("gagnant_feedback_categorie=='Gagnant' ~ simule_gagnant + tax_acceptance + (taxe_approbation=='NSP') + ", 
+# (2) Not no, full sample
+formula_effect_feedback_2 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ simule_gagnant + tax_acceptance + (taxe_approbation=='NSP') + ", 
                                               paste(variables_reg_effect_feedback, collapse = ' + ')))
-reg_effect_feedback_2 <- lm(formula_effect_feedback_2, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
+reg_effect_feedback_2 <- lm(formula_effect_feedback_2, data=s, subset=variante_taxe_info=='f', weights = s$weight, na.action='na.exclude')
 summary(reg_effect_feedback_2)
 
-# Not no, full sample
-formula_effect_feedback_3 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ simule_gagnant + tax_acceptance + (taxe_approbation=='NSP') + ", 
+# (3) Not no, close to the threshold, interaction with yellow vests and tax acceptance
+formula_effect_feedback_3 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') * simule_gagnant + simule_gagnant * gj + simule_gagnant * tax_acceptance + (taxe_approbation=='NSP') + ", 
                                               paste(variables_reg_effect_feedback, collapse = ' + ')))
-reg_effect_feedback_3 <- lm(formula_effect_feedback_3, data=s, subset=variante_taxe_info=='f', weights = s$weight, na.action='na.exclude')
+reg_effect_feedback_3 <- lm(formula_effect_feedback_3, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
 summary(reg_effect_feedback_3)
 
-# Not no, close to the threshold, interaction with tax acceptance
-formula_effect_feedback_4 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ simule_gagnant * tax_acceptance + (taxe_approbation=='NSP') + ", 
+# (4) Yes, close to the threshold
+formula_effect_feedback_4 <- as.formula(paste("gagnant_feedback_categorie=='Gagnant' ~ simule_gagnant + tax_acceptance + (taxe_approbation=='NSP') + ", 
                                               paste(variables_reg_effect_feedback, collapse = ' + ')))
 reg_effect_feedback_4 <- lm(formula_effect_feedback_4, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
 summary(reg_effect_feedback_4)
 
-# Not no, close to the threshold, interaction with yellow vests
-s$gj <- s$gilets_jaunes > 0
-formula_effect_feedback_5 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') + simule_gagnant * gj + (taxe_approbation=='NSP') + ", 
-                                              paste(variables_reg_effect_feedback, collapse = ' + ')))
-reg_effect_feedback_5 <- lm(formula_effect_feedback_5, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
-summary(reg_effect_feedback_5)
-
-# Not no, close to the threshold, interaction with yellow vests and tax acceptance
-formula_effect_feedback_6 <- as.formula(paste("gagnant_feedback_categorie!='Perdant' ~ (gagnant_categorie!='Perdant') * simule_gagnant + simule_gagnant * gj + simule_gagnant * tax_acceptance + (taxe_approbation=='NSP') + ", 
-                                              paste(variables_reg_effect_feedback, collapse = ' + ')))
-reg_effect_feedback_6 <- lm(formula_effect_feedback_6, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
-summary(reg_effect_feedback_6)
-
-table_effect_feedback <- stargazer(reg_effect_feedback_1, reg_effect_feedback_3, reg_effect_feedback_6, reg_effect_feedback_2,
+table_effect_feedback <- stargazer(reg_effect_feedback_1, reg_effect_feedback_2, reg_effect_feedback_3, reg_effect_feedback_4,
       title="Effect feedback on belief of winning.", star.cutoffs = NA, omit.table.layout = 'n', #star.cutoffs = c(0.1, 1e-5, 1e-30),
-      covariate.labels = c("Predicted winner ($\\widehat{\\Gamma}$)", "Initial tax Acceptance ($A^0$)", "Yellow Vests supporter", "$\\widehat{\\Gamma}$ $\\times$ Yellow Vests supporter", "$\\widehat{\\Gamma}$ $\\times$ $A^0$"),
+      covariate.labels = c("Predicted winner ($\\widehat{\\Gamma}$)", "Initial tax Acceptance ($A^0$)", "Yellow Vests supporter", "$\\widehat{\\Gamma} \\times A^0$", "$\\widehat{\\Gamma} \\times$ Yellow Vests supporter", "$\\widehat{\\Gamma} \\times G$"),
       dep.var.labels = c("Believes does not lose", "Believes wins"), dep.var.caption = "", header = FALSE, 
-      keep = c("^simule_gagnant", "acceptance", "gj"), order = c("^simule_gagnant1$", "^tax_acceptance", "$gj"),
+      keep = c("^simule_gagnant", "acceptance", "gj", "_gagnant"), order = c("^simule_gagnant1$", "^tax_acceptance", "^gj", "tax_acc", "gj"),
       add.lines = list(c("Controls: Incomes (piecewise continuous)", " \\checkmark", " \\checkmark", " \\checkmark", "\\checkmark"),
                c("\\quad estimated gains, socio-demo, other motives ", "", "", "", ""),
                c("Controls: initial win/lose category ($G$)", "", "", " \\checkmark", ""),
-               c("\\quad and interaction ($G \\times \\widehat{\\Gamma}$", "", "", "", ""),
+               # c("\\quad and interaction ($G \\times \\widehat{\\Gamma}$)", "", "", "", ""),
                c("Sub-sample", "$\\left| \\widehat{\\gamma}\\right|<50$", "", "$\\left| \\widehat{\\gamma}\\right|<50$", "$\\left| \\widehat{\\gamma}\\right|<50$")),
-      no.space=TRUE, intercept.bottom=FALSE, intercept.top=TRUE, omit.stat=c("adj.rsq", "f", "ser"), label="tab:heterogeneity_update")
+      no.space=TRUE, intercept.bottom=FALSE, intercept.top=TRUE, omit.stat=c("adj.rsq", "f", "ser"), label="tab:effect_feedback")
 write_clip(gsub('\\end{table}', '} {\\footnotesize \\parbox[t]{\\textwidth}{\\linespread{1.2}\\selectfont \\textsc{Note:} Standard errors are reported in parentheses. The list of controls can be found in Appendix \\ref{set_controls}.} }\\end{table}', 
                 gsub('\\begin{tabular}{@', '\\makebox[\\textwidth][c]{ \\begin{tabular}{@', table_effect_feedback, fixed=TRUE), fixed=T), collapse=' ')
 
