@@ -779,16 +779,29 @@ decrit(s$aide_non_autonomie, weights = s$weight)
 
 
 ##### Dépenses publiques #####
-categories_depenses <- c("sante", "education", "retraites", "securite", "recherche", "justice", "armee", "protection", "infrastructures", "loisirs", "aide")
+load('p_data.RData')
+package("quantreg")
+categories_depenses <- c("sante", "retraites", "education", "securite", "recherche", "justice", "armee", "protection", "infrastructures", "loisirs", "aide")
+for (v in categories_depenses) print(decrit(s[[paste('variation', v, sep='_')]], weights = s$weight))
+for (v in categories_depenses) print(paste(round(wtd.median(s[[paste('variation', v, sep='_')]], weight = s$weight, na.rm = T), 2), v))
+for (v in categories_depenses) print(paste(round(wtd.mean(s[[paste('variation', v, sep='_')]], weight = s$weight, na.rm = T), 2), v))
+i <- 0
 i <- 0
 for (v in categories_depenses) {
   print(summary(lm(s[[paste('variation', v, sep='_')]] ~ s[[paste('dep', i, 'en_position', sep='_')]], weights=s$weight)))
   i <- i+1 }
-# *** pour justice, loisirs, éducation
+# réponses dépendent de la position: *** pour justice, loisirs, éducation
 t_depenses$aleatoire <- FALSE
 s$aleatoire <- TRUE
 d <- merge(s, t_depenses, all=T)
-for (v in categories_depenses) {  print(summary(lm(d[[paste('variation', v, sep='_')]] ~ d$aleatoire))) } # * -: armee, securite, aide, 
+for (v in categories_depenses) print(paste(round(wtd.median(d[[paste('depense', v, sep='_')]], weight = d$weight, na.rm = T), 2), v)) # the one
+for (v in categories_depenses) print(paste(round(wtd.mean(t_depenses[[paste('depense', v, sep='_')]], na.rm = T), 2), v))
+decrit(d$variation_recette, weights = s$weight)
+decrit(d$variation_recette)
+decrit(s$variation_recette)
+decrit(t_depenses$budget_equilibre)
+decrit(100*(d$depense_totale / 1052 - 1), weights = s$weight) # median: 1062 / mean: 1071
+for (v in categories_depenses) {  print(summary(lm(d[[paste('variation', v, sep='_')]] ~ d$aleatoire))) } # variation différente si ordre aléatoire: * -: armee, securite, aide, 
 summary(lm(d$variation_aide ~ d$aleatoire, weights = d$weight))
 summary(rq(d$variation_aide ~ d$aleatoire, weights = d$weight))
 decrit(d$variation_aide, weights = d$weight)
@@ -805,6 +818,11 @@ for (v in categories_depenses) { # why not use tidyverse's gather?
 }
 dep$categorie <- relevel(as.factor(dep$categorie), "infrastructures")
 summary(lm(variation ~ categorie, data=dep)) # answers are not random, i.e. average depends significantly on category
+# les réponses < -20 ou > 20 sont dues à un déplacement de la dépense totale jusqu'au min ou au max après avoir bougé les autres dépenses, et indique donc que ça a été répondu à la va-vite (car les autres dépenses sont laissées au min ou au max).
+decrit(s$duree_depenses)
+for (v in categories_depenses) print(paste(round(wtd.median(s[s$duree_depenses > 30,paste('variation', v, sep='_')], weight = s$weight[s$duree_depenses > 30], na.rm = T), 2), v))
+for (v in categories_depenses) print(paste(round(wtd.mean(s[s$duree_depenses > 30,paste('variation', v, sep='_')], weight = s$weight[s$duree_depenses > 30], na.rm = T), 2), v))
+summary(lm(s$variation_aide ~ s$depenses_confiant, weights = s$weight))
 
 
 ##### Rattrapage diesel #####
@@ -4536,9 +4554,13 @@ wtd.mean(ols_si3$fitted.values + 0.4376 * (1*(s$simule_gain_cible > 0) - as.nume
 s$non_perdant[s$variante_taxe_info=='f' & abs(s$simule_gain) < 50] <- tsls1_si4$fitted.values
 wtd.mean(tsls2_si4$fitted.values + 0.4196 * (as.numeric(s$simule_gagnant) - (s$non_perdant))[s$variante_taxe_info=='f' & abs(s$simule_gain) < 50], weights = s$weight[s$variante_taxe_info=='f' & abs(s$simule_gain) < 50])
 
-# Acceptance rate if everyone believed in effectiveness: 0.45 (IV effect: +0.42)
+# (1) Approval rate if everyone believed in effectiveness: 0.45 (IV effect: +0.42)
 s$taxe_efficace.hat <- tsls1_ee1$fitted.values
 wtd.mean(tsls2_ee1$fitted.values + 0.4156 * (1 - (s$taxe_efficace.hat)), weights = s$weight)
+
+# (4) Acceptance rate if everyone believed in effectiveness: 0.45 (IV effect: +0.42)
+s$taxe_efficace.not_no <- tsls1_eea4$fitted.values
+wtd.mean(tsls2_eea4$fitted.values + 0.479 * (1 - (s$taxe_efficace.not_no)), weights = s$weight)
 
 
 ##### 4.1.2 Effect of feedback on beliefs #####

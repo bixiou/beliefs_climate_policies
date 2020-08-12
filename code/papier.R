@@ -883,6 +883,7 @@ write_clip(gsub('\\end{table}', '} {\\footnotesize \\parbox[t]{\\textwidth}{\\li
 
 # Table E.3
 # (A1) not No ~ Yes, LIML: 64* p.p. (cf. Stata)
+s$taxe_efficace.hat <- (s$taxe_efficace=='Oui')
 liml_ee1 <- ivmodelFormula(as.formula(paste("tax_acceptance ~ ", paste(variables_reg_ee, collapse = ' + '), "+ taxe_efficace.hat | ", paste(variables_reg_ee, collapse = ' + '), " + apres_modifs + info_CC")), data = s)
 liml_ee1
 
@@ -915,7 +916,7 @@ liml_ee1$sd['taxe_efficace.hat'] <- liml_ee1$LIML$std.err
 
 Table_eea <- stargazer(ols_eea2, ols_eea2, tsls2_eea3, ols_eea4, title="Effect of believing in environmental effectiveness on support: second stages of alternative specifications", 
                        dep.var.caption = "Initial Tax \\& Dividend", model.names = F, covariate.labels = c("Environmental effectiveness: ``Yes''", "Environmental effectiveness: not ``No''"), 
-                       dep.var.labels = c("Approval ($\\dot{A^0}$)", "Acceptance ($A^0$)"), header = FALSE, column.labels = c("$LIML$", "$OLS$", "$IV$", "$OLS$"),
+                       dep.var.labels = c("Acceptance ($A^0$)"), header = FALSE, column.labels = c("$LIML$", "$OLS$", "$IV$", "$OLS$"),
                        keep = c("efficace"), star.cutoffs = NA, omit.table.layout = 'n', # "Constant",
                        coef = list(liml_ee1$coef, NULL, NULL, NULL), #column.labels = c("(A1)", "(A2)", "(A3)", "(A4)", "(A5)"),
                        se = list(liml_ee1$sd, NULL, NULL, NULL),
