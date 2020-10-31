@@ -198,8 +198,17 @@ sum(s$weight[s$simule_gain_interaction > -50 & s$simule_gain_interaction < 50])/
 sum(s$weight[s$simule_gain_interaction > -30 & s$simule_gain_interaction < 50])/sum(s$weight) # 21%
 mean(fit$predicted_winner[fit$winner==0] == 1)
 mean(fit$predicted_winner[fit$winner==1] == 0)
-mean(fit$predicted_winner[fit$gain < -50]) # 10%
-mean(fit$predicted_winner[fit$gain > 50]==0) # 10%
+mean(fit$mistake[fit$predicted_winner==T]) # 9%
+mean(fit$mistake[fit$predicted_winner==F]) # 30%
+mean(fit$mistake[fit$gain > 0]) # 17%
+mean(fit$mistake[fit$gain < 0]) # 17%
+mean(fit$predicted_winner[fit$gain < -30]) # 10%
+mean(fit$predicted_winner[fit$gain > 30]==0) # 10%
+mean(fit$predicted_winner[fit$gain < -12]) # 13%
+mean(fit$predicted_winner[fit$gain > 12]==0) # 14%
+mean((abs(fit$gain)>30)[abs(fit$predicted_gain) < 12]) # 13%
+mean(fit$predicted_winner[fit$gain > 12]==0) # 14%
+mean(fit$predicted_winner[fit$gain > -50 & fit$gain < 50]) # 10%
 mean(fit$predicted_winner[fit$gain < -45 & fit$gain > -55]) # 18%
 mean(fit$predicted_winner[fit$gain < 55 & fit$gain > 45]==0) # 25%
 mean(fit$gain < -45 & fit$gain > -55) # 2%
@@ -4577,3 +4586,41 @@ formula_effect_feedback_5 <- as.formula(paste("gagnant_feedback_categorie!='Perd
 reg_effect_feedback_5 <- lm(formula_effect_feedback_5, data=s, subset=variante_taxe_info=='f' & abs(simule_gain) < 50, weights = s$weight, na.action='na.exclude')
 summary(reg_effect_feedback_5)
 
+
+##### Motivated reasoning with environmental effectiveness #####
+# effect of info on EE goes through those who originally accept reform
+summary(lm(taxe_efficace!='Non' ~ apres_modifs * tax_acceptance, data=s, weights = s$weight))
+summary(lm(taxe_efficace!='Non' ~ info_CC * tax_acceptance, data=s, weights = s$weight))
+summary(lm(taxe_efficace!='Non' ~ apres_modifs * info_CC * tax_acceptance, data=s, weights = s$weight))
+
+
+##### Regression results for housings increase #####
+# natural gas
+plot(seq(0,300,1), (function(x) {return(1.4611*x)})(seq(0,300,1)), col='red', type='l', lwd=2, ylab = "gas", xlab=c('green: all terms / red: linear / black: quadratic')) # quadratic
+lines(fit$accommodation_size[fit$natural_gas==T], fit$housing_tax_increase[fit$natural_gas==T], cex = 0.1, type='p')
+lines(seq(0,300,1), (function(x) {return(1.5518*x-0.0003*x^2)})(seq(0,300,1)), type='l', lwd=2) # linear
+lines(seq(0,300,1), (function(x) {return(-35.1697+2.5369*x-0.0025*x^2)})(seq(0,300,1)), lwd=2, type='l', col='green') # with intercept
+lines(seq(0,300,1), (function(x) {return(153.3220+1.4332*x-0.0006*x^2)})(seq(0,300,1)), type='l', col='green') # with intercept
+
+# fuel
+plot(seq(0,300,1), (function(x) {return(1.7729*x)})(seq(0,300,1)), col='red', type='l', ylab = "fuel", xlab=c('green: all terms / red: linear / black: quadratic / blue: linear for surface <= 200'))# quadratic
+lines(fit$accommodation_size[fit$domestic_fuel==T], fit$housing_tax_increase[fit$domestic_fuel==T], cex = 0.1, type='p')
+lines(seq(0,300,1), (function(x) {return(2.6531*x-0.0049*x^2)})(seq(0,300,1)), type='l') # linear
+lines(seq(0,300,1), (function(x) {return(153.3220+1.4332*x-0.0006*x^2)})(seq(0,300,1)), type='l', col='green') # with intercept
+lines(seq(0,300,1), (function(x) {return(1.99426*x)})(seq(0,300,1)), type='l', col='blue') # with intercept
+lines(seq(0,300,1), (function(x) {return(2.952*x-7.580e-03*x^2+4.192e-06*x^3)})(seq(0,300,1)), type='l') # linear
+
+summary(lm(housing_tax_increase ~ natural_gas:accommodation_size + domestic_fuel:accommodation_size - 1, data = fit))
+summary(lm(housing_tax_increase ~ natural_gas:accommodation_size + domestic_fuel:accommodation_size - 1, data = fit, subset = accommodation_size <= 200))
+summary(lm(housing_tax_increase ~ natural_gas:accommodation_size + domestic_fuel:accommodation_size + domestic_fuel:I(accommodation_size^2) + domestic_fuel:I(accommodation_size^3) - 1, data = fit))
+# the one chosen:
+summary(lm(housing_tax_increase ~ natural_gas:accommodation_size + domestic_fuel:accommodation_size + domestic_fuel:I(accommodation_size^2) - 1, data = fit))
+
+
+##### FR  #####
+# 28% n'atteindront pas leur 1 tCO2, et 16% des émissions remboursables ne seront pas réclamées
+wtd.mean(fit$total_tax_increase/fit$nb_beneficiaries < 50, weights = fit$hh_weight)
+wtd.mean(fit$total_expenditures_increase/fit$nb_beneficiaries < 50)
+sum(pmax(0, 50*fit$nb_beneficiaries - fit$total_tax_increase) * fit$hh_weight)/sum(50*fit$nb_beneficiaries * fit$hh_weight)
+50*sum(pmax(0, 50*fit$nb_beneficiaries - fit$total_tax_increase) * fit$hh_weight)/sum(50*fit$nb_beneficiaries * fit$hh_weight)
+sum(110*fit$nb_beneficiaries * fit$hh_weight)/1e9*sum(pmax(0, 50*fit$nb_beneficiaries - fit$total_tax_increase) * fit$hh_weight)/sum(50*fit$nb_beneficiaries * fit$hh_weight)

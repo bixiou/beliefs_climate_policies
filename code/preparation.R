@@ -65,7 +65,7 @@ irpp <- function(rev, nb_adultes, nb_pers) {
 # taille_agglo$share[taille_agglo$taille_agglo==8] # Paris
 
 
-##### Quantiles de revenus ERFS 2014 #####
+#### Quantiles de revenus ERFS 2014 #####
 # quantiles <- function(data, weights = NULL)  {
 #   if (is.null(weights)) return(function(q) { pmax(0,quantile(data, probs = q, na.rm = TRUE, names = FALSE) / 12)} )
 #   else return(function(q) { pmax(0, wtd.quantile(data, probs = q, na.rm = TRUE, weights = weights) / 12)} )
@@ -85,7 +85,7 @@ irpp <- function(rev, nb_adultes, nb_pers) {
 #   return(round(s,0))
 # }
 # wd <- getwd()
-# setwd("U:/Données/ERFS_2014")
+# setwd("C:/Users/afabre/Documents/Données/ERFS_2014/Stata")
 # setwd("/mnt/dd/adrien/DD/Économie/Données/ERFS_2014/Stata")
 # indiv <- read.dta13("fpr_indiv_2014.dta")
 # irft4 <- read.dta13("fpr_irf14e14t4.dta")
@@ -1623,7 +1623,7 @@ fit_housing_2$error <- (fit_housing_2$vrai_gain_chauffage > 0) != (16.1 + fit_ho
 fit_housing_2$gain <- fit_housing_2$vrai_gain_chauffage / fit_housing_2$uc
 fit_housing_2$predicted_gain <- fit_housing_2$estimation_gain_chauffage / fit_housing_2$uc
 fit_housing_2 <- fit_housing_2[order(fit_housing_2$predicted_gain, decreasing=T),]
-fit <- read.csv("../model_reforms_data/prediction expenditures.csv") # specification (1), élasticité 0.15, + 16.1 dans predicted_winner
+fit <- read.csv("../model_reforms_data/prediction expenditures.csv") # specification (1), élasticité 0.15, + 16.1 dans predicted_winner / défini dans test_predictions_ols_regression_with_transports.py
 fit$gain <- (110 * fit$nb_beneficiaries - fit$total_expenditures_increase) / fit$consumption_units
 fit$predicted_gain <- (16.1 + 110 * fit$nb_beneficiaries - fit$predicted_total_expenditures_increase) / fit$consumption_units
 fit_2 <- read.csv("../model_reforms_data/prediction expenditures (2).csv") # specification (2), élasticité 0.2, + 9.1 dans predicted_winner
