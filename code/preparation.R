@@ -1600,6 +1600,7 @@ prepare_s() # 5 warnings are expected
 
 # write.csv(s[,c("id", "taille_agglo", "sexe", "age", "diplome4", "region", "csp")], "IDs.csv")
 # saveRDS(s, "beliefs_climate_policies.Rda")
+# saveRDS(objective_gains_inelastic, "objective_gains_inelastic.Rda")
 # TODO!: duplicated ID
 
 # ids <- read.csv("C:/Users/a.fabre/Downloads/IDs.csv", header=FALSE)
