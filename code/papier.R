@@ -99,7 +99,7 @@ cdf_all_inelastic <- Ecdf(objective_gains_inelastic$all)
 plot(Ecdf(s$gain), type="s", lwd=2, col="orange", xlim=c(-400, 150), main="", ylab="", xlab="") + grid()
 lines(cdf_all$x, cdf_all$y, lwd=2, col="darkblue")
 lines(cdf_all_inelastic$x, cdf_all_inelastic$y, lwd=2, lty=2, col="darkblue")
-title(ylab=expression("Proportion "<=" x"), xlab="Gain (in €/year per c.u.)", line=2.3)
+title(ylab="Proportion \u2264 x", xlab="Gain (in €/year per c.u.)", line=2.3)
 abline(v=c(-280, -190, -120, -70, -30, 0, 20, 40, 60, 80), lty=3, col="orange")
 axis(3, at=c(-280, -190, -120, -70, -30, 0, 20, 40, 60, 80), tck=0.0, lwd=0, lwd.ticks = 0, padj=1.5, col.axis="orange", cex.axis=0.9)
 # legend("topleft", col=c("orange", "darkblue", "darkblue"), cex = 0.85, lty = c(1,1,2), lwd=2, legend = c("Subjective", "Objective", "Objective inelastic"))
@@ -1132,13 +1132,13 @@ write_clip(gsub('\\end{table}', "} {\\footnotesize \\parbox[t]{\\textwidth}{\\li
 
 
 ##### Appendix L. Willingness to pay #####
-# Figure K.1
+# Figure K.1 (WTP)
 wtd.mean(s$uc, weights = s$weight) # 1.6
 ggplot() + geom_smooth(data=s[s$taxe_efficace!='Non',], method = "auto", aes(x=gain, y=1*(tax_acceptance), col=" Effective: not ``No''")) + ylim(c(0,1)) +
  xlab("Subjective gain, among non believers in ineffectiveness") + ylab("Acceptance rate") + geom_hline(yintercept=0.5, col='red') + theme_bw() + 
- geom_smooth(data=s, method = "auto", aes(x=gain, y=1*(tax_acceptance), col=' All            ')) + ylim(c(0,1)) + #geom_vline(xintercept=-66, col='red') +
+ geom_smooth(data=s, method = "auto", aes(x=gain, y=1*(tax_acceptance), col=' All            ')) + #geom_vline(xintercept=-66, col='red') +
  xlab("Subjective gain") + ylab("Acceptance rate") + geom_hline(yintercept=0.5, col='red') + theme_bw() + theme(legend.position="top", ) + # legend.position="top", 
- scale_color_manual(name="Among:", values=c(" Effective: not `No'"="#000000", ' All            '="#99CCDD"))
+ scale_color_manual(name="Among:", values=c(" Effective: not ``No''"="#000000", ' All            '="#99CCDD"))
 
 
 ##### Appendix M. Ensuring data quality #####

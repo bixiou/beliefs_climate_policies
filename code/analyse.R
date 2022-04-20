@@ -780,11 +780,11 @@ summary(lm((transferts_inter=='Oui') ~ transferts_inter_info*apres_modifs, data 
 decrit(s$aide_2p, miss = T, weights = s$weight) # Dernier tiers de l'échantillon: 2% du PIB au lieu de 5, et on demande pourquoi s'ils répondent pas Oui
 decrit(s$transferts_inter[s$aide_2p==T], miss = T, weights = s$weight[s$aide_2p==T]) # Désapprobation d'aideà 2%: 51%
 decrit(s$transferts_inter[s$aide_2p==F], miss = T, weights = s$weight[s$aide_2p==F]) # Désapprobation d'aideà 5%: 34%
-decrit(s$aide_non_etats, weights = s$weight)
-decrit(s$aide_non_priorite, weights = s$weight)
-decrit(s$aide_non_global, weights = s$weight)
-decrit(s$aide_non_trop, weights = s$weight)
-decrit(s$aide_non_autonomie, weights = s$weight)
+decrit(s$aide_non_etats, weights = s$weight) # 37% Je serais favorable si l'aide allait directement aux plus pauvres
+decrit(s$aide_non_priorite, weights = s$weight) # 33% priorité aux services publics et aux Français
+decrit(s$aide_non_global, weights = s$weight) # 26% si tous les pays riches contribuaient autant que la France
+decrit(s$aide_non_trop, weights = s$weight) # 10% 2% c'est trop
+decrit(s$aide_non_autonomie, weights = s$weight) # 9% n'ont pas besoin de notre aide
 
 
 ##### Dépenses publiques #####

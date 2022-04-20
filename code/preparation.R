@@ -1021,7 +1021,9 @@ convert_s <- function(only_finished = T) {
   s$gilets_jaunes[s$gilets_jaunes_dedans==T] <<- 2
   s$gilets_jaunes <<- as.item(s$gilets_jaunes, missing.values=-0.1, labels = structure(c(-0.1,-1:2), names=c('NSP', 'oppose', 'comprend', 'soutient', 'est_dedans')),
                              annotation="gilets_jaunes: -1: s'oppose / 0: comprend sans soutenir ni s'opposer / 1: soutient / 2: fait partie des gilets jaunes (gilets_jaunes_compris/oppose/soutien/dedans/NSP)" )
-  s$Gilets_jaunes <<- as.factor(as.character(s$gilets_jaunes))
+  s$Gilets_jaunes <<- as.character(s$gilets_jaunes)
+  s$Gilets_jaunes[s$gilets_jaunes=="NSP"] <<- "NSP"
+  s$Gilets_jaunes <<- as.factor(s$Gilets_jaunes)
   s$Gilets_jaunes <<- relevel(s$Gilets_jaunes, 'soutient')
   s$Gilets_jaunes <<- relevel(s$Gilets_jaunes, 'comprend')
   s$Gilets_jaunes <<- relevel(s$Gilets_jaunes, 'NSP')

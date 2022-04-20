@@ -227,8 +227,9 @@ labels_tax_condition <- c("a payment for the 50% poorest French<br> (those earni
                           "compensation for households forced to consume petroleum products", "a reduction in social contributions", "a VAT cut", 
                           "a reduction in the public deficit", "the thermal renovation of buildings", "renewable energies (wind, solar, etc.)", "non polluting transport")
 labels_tax_condition[3] <- "compensation for households constrained<br> to consume petroleum products"
-barres(file="tax_condition_val", title="", data=data5(names(s)[which(names(s)=='si_pauvres'):(which(names(s)=='si_pauvres')+8)], miss=FALSE, rev=T)[,rev(c(9,5,8,7,3,4,1,6,2))], nsp=FALSE, 
-       sort=F, thin=T, legend = rep("", 5), labels=labels_tax_condition[rev(c(9,5,8,7,3,4,1,6,2))], margin_l=220) # rev(yes_no5)
+tax_condition_val <- barres(file="tax_condition_val", title="", data=data5(names(s)[which(names(s)=='si_pauvres'):(which(names(s)=='si_pauvres')+8)], miss=FALSE, rev=T)[,rev(c(9,5,8,7,3,4,1,6,2))], nsp=FALSE, 
+       sort=F, thin=T, legend = c("Yes, completely", "Rather yes", "Indifferent/PNR", "Not really", "Not at all"), labels=labels_tax_condition[rev(c(9,5,8,7,3,4,1,6,2))], margin_l=220) # rev(yes_no5)
+save_plotly(tax_condition_val, folder = "../images/")
 
 ## 5.2 Other instruments
 # Favored environmental policies

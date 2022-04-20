@@ -1,0 +1,9 @@
+\babel@toc {english}{}
+\beamer@sectionintoc {1}{Survey and data}{19}{0}{1}
+\beamer@sectionintoc {2}{Perceptions}{20}{0}{2}
+\beamer@sectionintoc {3}{Are beliefs persistent?}{29}{0}{3}
+\beamer@sectionintoc {4}{Motives for acceptance}{37}{0}{4}
+\beamer@sectionintoc {5}{Conclusion}{47}{0}{5}
+\beamer@sectionintoc {6}{Main Appendix}{53}{1}{6}
+\beamer@sectionintoc {7}{Additional material -- Companion paper}{65}{1}{7}
+\beamer@sectionintoc {8}{Additional material -- Appendix}{75}{1}{8}
