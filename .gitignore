@@ -9,7 +9,6 @@ code/*.Rproj
 *.RData
 *.RData.bak
 *.dta
-*.csv
 code/*.csv
 model_reforms_data/*.csv
 !code/agglos.csv

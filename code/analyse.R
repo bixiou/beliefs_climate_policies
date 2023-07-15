@@ -4624,3 +4624,8 @@ wtd.mean(fit$total_expenditures_increase/fit$nb_beneficiaries < 50)
 sum(pmax(0, 50*fit$nb_beneficiaries - fit$total_tax_increase) * fit$hh_weight)/sum(50*fit$nb_beneficiaries * fit$hh_weight)
 50*sum(pmax(0, 50*fit$nb_beneficiaries - fit$total_tax_increase) * fit$hh_weight)/sum(50*fit$nb_beneficiaries * fit$hh_weight)
 sum(110*fit$nb_beneficiaries * fit$hh_weight)/1e9*sum(pmax(0, 50*fit$nb_beneficiaries - fit$total_tax_increase) * fit$hh_weight)/sum(50*fit$nb_beneficiaries * fit$hh_weight)
+
+
+##### Soutien inconditionnel fonction perceptions #####
+decrit(s$tax_approval[s$taxe_efficace == "Oui" & s$gagnant_categorie == "Gagnant" & s$progressivite == "Oui"], weights = s$weight[s$taxe_efficace == "Oui" & s$gagnant_categorie == "Gagnant" & s$progressivite == "Oui"])
+decrit(s$tax_acceptance[s$taxe_efficace == "Non" & s$gagnant_categorie == "Perdant" & s$progressivite == "Non"], weights = s$weight[s$taxe_efficace == "Non" & s$gagnant_categorie == "Perdant" & s$progressivite == "Non"])
