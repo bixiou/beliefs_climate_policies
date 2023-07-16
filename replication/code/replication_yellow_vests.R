@@ -5,16 +5,16 @@
 # Douenne, Thomas, and Adrien Fabre. "Yellow vests, pessimistic beliefs, and carbon tax aversion." American Economic Journal: Economic Policy 14.1 (2022): 81-110.
 
 # Relevant package
-library(tidyverse)
-library(rdrobust)
-library(memisc)
-library(rddensity)
-library(rddtools)
-library(latex2exp)
-library(gt)
-library(modelsummary)
-library(stargazer)
-library(fastDummies)
+package("tidyverse")
+package("rdrobust")
+package("memisc")
+package("rddensity")
+package("rddtools")
+package("latex2exp")
+package("gt")
+package("modelsummary")
+package("stargazer")
+package("fastDummies")
 
 # For summarising rdrobust models: https://stackoverflow.com/questions/67823100/print-tables-with-3-regression-output-models-from-rdrobust
 tidy.rdrobust <- function(model, ...) {
@@ -41,7 +41,7 @@ glance.rdrobust <- function(model, ...) {
 
 # Load the original csv
 # This was created using "write_csv(s, "s_original.csv")" after running preparation.R
-s <- read_csv("../original_data/s_original.csv")
+s <- read_csv("../replication/original_data/s_original.csv")
 
 # Main outcome variable is "believes does not lose"
 s$believes_does_not_lose <- s$gagnant_feedback_categorie != "Perdant"
@@ -294,9 +294,88 @@ c3 <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + t
          data = s, 
          subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
          weights = weight)
+summary(c3)
 
 # Add interactions between the interaction variables and the running variable
 c3a <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+            Simule_gain + Simule_gain2 + single + hausse_depenses_par_uc +
+            sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+            nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+            uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+            percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+            I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+            I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                   70, 0)) +
+            # These are the additional controls for column 3
+            simule_gagnant * (gilets_jaunes > 1) +
+            simule_gagnant * tax_acceptance +
+            simule_gagnant * (gagnant_categorie!='Perdant') +
+            # These are interactions between the sub group variables and running variables
+            Simule_gain * (gilets_jaunes > 1) +
+            Simule_gain2 * (gilets_jaunes > 1) +
+            Simule_gain * tax_acceptance +
+            Simule_gain2 * tax_acceptance +
+            Simule_gain * (gagnant_categorie!='Perdant') +
+            Simule_gain2 * (gagnant_categorie!='Perdant') 
+          
+          ,
+          data = s, 
+          subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+          weights = weight)
+summary(c3a)
+
+c3_all_covariates <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+           Simule_gain + Simule_gain2 + single + hausse_depenses_par_uc +
+           sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+           nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+           uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+           percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+           I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+           I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                  70, 0)) +
+           # These are the additional controls for column 3
+           simule_gagnant * (gilets_jaunes > 0) +
+           simule_gagnant * tax_acceptance +
+           simule_gagnant * (gagnant_categorie!='Perdant') ,
+         data = s, 
+         subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+         weights = weight)
+summary(c3_all_covariates)
+
+c3_only_acceptance <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+           Simule_gain + Simule_gain2 + single + hausse_depenses_par_uc +
+           sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+           nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+           uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+           percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+           I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+           I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                  70, 0)) +
+           simule_gagnant * tax_acceptance +
+           simule_gagnant * (gagnant_categorie!='Perdant') ,
+         data = s, 
+         subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+         weights = weight)
+summary(c3_only_acceptance)
+
+c3_only_yv <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+                           Simule_gain + Simule_gain2 + single + hausse_depenses_par_uc +
+                           sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+                           nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+                           uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+                           percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+                           I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+                           I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                                  70, 0)) +
+                           simule_gagnant * (gilets_jaunes > 0) +
+                           simule_gagnant * (gagnant_categorie!='Perdant') ,
+                         data = s, 
+                         subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+                         weights = weight)
+summary(c3_only_yv)
+
+
+c3a_all_covariates <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
             Simule_gain + Simule_gain2 + single + hausse_depenses_par_uc +
             sexe + statut_emploi + csp + region + diplome4 + taille_menage +
             nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
@@ -321,9 +400,85 @@ c3a <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + 
           data = s, 
           subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
           weights = weight)
+summary(c3a_all_covariates)
+
+# Add interactions between the interaction variables and the running variable
+c3a_only_acceptance <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+            Simule_gain + Simule_gain2 + single + hausse_depenses_par_uc +
+            sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+            nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+            uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+            percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+            I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+            I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                   70, 0)) +
+            # These are the additional controls for column 3
+            simule_gagnant * tax_acceptance +
+            simule_gagnant * (gagnant_categorie!='Perdant') +
+            # These are interactions between the sub group variables and running variables
+            Simule_gain * tax_acceptance +
+            Simule_gain2 * tax_acceptance +
+            Simule_gain * (gagnant_categorie!='Perdant') +
+            Simule_gain2 * (gagnant_categorie!='Perdant') 
+          
+          ,
+          data = s, 
+          subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+          weights = weight)
+summary(c3a_only_acceptance)
+
+# Add interactions between the interaction variables and the running variable
+c3a_only_yv <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+            Simule_gain + Simule_gain2 + single + hausse_depenses_par_uc +
+            sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+            nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+            uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+            percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+            I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+            I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                   70, 0)) +
+            # These are the additional controls for column 3
+            simule_gagnant * (gilets_jaunes > 0) +
+            simule_gagnant * (gagnant_categorie!='Perdant') +
+            # These are interactions between the sub group variables and running variables
+            Simule_gain * (gilets_jaunes > 0) +
+            Simule_gain2 * (gilets_jaunes > 0) +
+            Simule_gain * (gagnant_categorie!='Perdant') +
+            Simule_gain2 * (gagnant_categorie!='Perdant') 
+          
+          ,
+          data = s, 
+          subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+          weights = weight)
+summary(c3a_only_yv)
+
 
 # Replace quadratic with local linear
 c3b <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+            simule_gain * simule_gagnant + single + hausse_depenses_par_uc +
+            sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+            nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+            uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+            percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+            I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+            I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                   70, 0)) +
+            # These are the additional controls for column 3
+            simule_gagnant * (gilets_jaunes > 1) +
+            simule_gagnant * tax_acceptance +
+            simule_gagnant * (gagnant_categorie!='Perdant') +
+            # These are interactions between the sub group variables and running variables
+            (simule_gain * simule_gagnant) * (gilets_jaunes > 1) +
+            (simule_gain * simule_gagnant) * tax_acceptance +
+            (simule_gain * simule_gagnant) * (gagnant_categorie!='Perdant') 
+          
+          ,
+          data = s, 
+          subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+          weights = weight)
+summary(c3b)
+
+c3b_all_covariates <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
             simule_gain * simule_gagnant + single + hausse_depenses_par_uc +
             sexe + statut_emploi + csp + region + diplome4 + taille_menage +
             nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
@@ -345,6 +500,53 @@ c3b <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + 
           data = s, 
           subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
           weights = weight)
+summary(c3b_all_covariates)
+
+# Replace quadratic with local linear
+c3b_only_acceptance <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+            simule_gain * simule_gagnant + single + hausse_depenses_par_uc +
+            sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+            nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+            uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+            percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+            I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+            I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                   70, 0)) +
+            # These are the additional controls for column 3
+            simule_gagnant * tax_acceptance +
+            simule_gagnant * (gagnant_categorie!='Perdant') +
+            # These are interactions between the sub group variables and running variables
+            (simule_gain * simule_gagnant) * tax_acceptance +
+            (simule_gain * simule_gagnant) * (gagnant_categorie!='Perdant') 
+          
+          ,
+          data = s, 
+          subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+          weights = weight)
+summary(c3b_only_acceptance)
+
+# Replace quadratic with local linear
+c3b_only_yv <- lm(formula =  gagnant_feedback_categorie != "Perdant" ~ simule_gagnant + tax_acceptance +
+            simule_gain * simule_gagnant + single + hausse_depenses_par_uc +
+            sexe + statut_emploi + csp + region + diplome4 + taille_menage +
+            nb_14_et_plus + nb_adultes + fume + actualite + taille_agglo +
+            uc + niveau_vie + age_18_24 + age_25_34 + age_35_49 + age_50_64 +
+            percentile_revenu + I(pmin(percentile_revenu - 20, 0)) +
+            I(pmin(percentile_revenu - 70, 0)) + percentile_revenu_conjoint +
+            I(pmin(percentile_revenu_conjoint - 20, 0)) + I(pmin(percentile_revenu_conjoint -
+                                                                   70, 0)) +
+            # These are the additional controls for column 3
+            simule_gagnant * (gilets_jaunes > 0) +
+            simule_gagnant * (gagnant_categorie!='Perdant') +
+            # These are interactions between the sub group variables and running variables
+            (simule_gain * simule_gagnant) * (gilets_jaunes > 0) +
+            (simule_gain * simule_gagnant) * (gagnant_categorie!='Perdant') 
+          
+          ,
+          data = s, 
+          subset = variante_taxe_info == 'f' & abs(simule_gain) < 50,
+          weights = weight)
+summary(c3b_only_yv)
 
 # Write to a table
 tab42_v4_gof <- tibble::tribble(~raw,        ~clean,         ~fmt,
@@ -354,7 +556,7 @@ tab42_v4_rows <- tibble::tribble(~term,                         ~c3,            
                                  "Polynomial",                  "Global quadratic", "Global quadratic",  "Local linear",
                                  "Interactions with polynomial", "",                 "X",                 "X")
 attr(tab42_v4_rows, 'position') <- 19:20
-sink("../figures_tables/table42_v4.tex")
+sink("../replication/figures_tables/table42_v4.tex")
 modelsummary(list(c3,c3a,c3b), output = "latex_tabular",
              fmt = 3, statistic =c("({std.error})", "[{p.value}]"),
              coef_map = c("simule_gagnant" = "Predicted winner ($\\hat{\\Gamma} == 1$)", 
